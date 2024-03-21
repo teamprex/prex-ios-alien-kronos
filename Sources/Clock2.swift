@@ -28,13 +28,19 @@ public enum Clock2 {
     ///     A closure that will be called after _all_ the NTP calls are finished.
     ///     This will be called from main thread.
     @MainActor
-    public static func sync(completion: SyncCallback? = nil) {
+    public static func sync(offSetCompletion: SyncOffSetCallback? = nil, completion: SyncCallback? = nil) {
         assert(Thread.isMainThread)
         let defaultPool = "time.apple.com"
         let defaultSampleCount = 4
-        sync(from: defaultPool, samples: defaultSampleCount, completion: completion)
+        sync(from: defaultPool, samples: defaultSampleCount, offSetCompletion: offSetCompletion, completion: completion)
     }
-    public typealias SyncCallback = (TimeInterval?) -> Void
+    public typealias SyncOffSetCallback = (TimeInterval?) -> Void
+    public typealias SyncCallback = () -> Void
+    
+    /// To get ntp date time based on the given offset
+    public static func getDate(offset: TimeInterval) -> Date {
+        Date(timeIntervalSince1970: TimeFreeze(offset: offset).adjustedTimestamp)
+    }
     
 //    @MainActor
 //    public static func synchronizeTimeWithNTPServers() async {
@@ -104,19 +110,21 @@ public enum Clock2 {
     private static func sync(
         from pool: String,
         samples: Int,
-        completion: ((TimeInterval?) -> Void)? = nil)
+        offSetCompletion: ((TimeInterval?) -> Void)? = nil,
+        completion: (() -> Void)? = nil)
     {
         assert(Thread.isMainThread)
         NTPClient().query(pool: pool, numberOfSamples: samples) { offset, done, total in
             assert(Thread.isMainThread)
             if let offset = offset {
+                offSetCompletion?(offset)
                 protection.lock()
                 latestOffset = offset
                 protection.unlock()
             }
             
             if done == total {
-                completion?(offset)
+                completion?()
             }
         }
     }
