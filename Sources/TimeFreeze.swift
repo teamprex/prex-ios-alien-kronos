@@ -71,17 +71,33 @@ struct TimeFreeze {
     ///
     /// - returns: An Int measurement of system uptime in microseconds.
     static func systemUptime() -> TimeInterval {
+        var now: TimeInterval
+        var beforeNow: Double
+        var afterNow = bootTime()
+        var i = 0
+        /// To prevent the race condition if there's a time change (NTP or user-modified) and the clock is no longer monotonic
+        /// https://stackoverflow.com/a/40497811
+        repeat {
+            assert(i < 10, "systemUpTime loop repeats more than 10 times")
+            beforeNow = afterNow
+            now = currentTime()
+            afterNow = bootTime()
+            i += 1
+        } while (afterNow != beforeNow)
+        
+        assert(now >= beforeNow, "inconsistent clock state: system time precedes boot time")
+
+        return now - beforeNow
+    }
+    
+    private static func bootTime() -> Double {
         var mib = [CTL_KERN, KERN_BOOTTIME]
         var size = MemoryLayout<timeval>.stride
         var bootTime = timeval()
 
         let bootTimeError = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0) != 0
         assert(!bootTimeError, "system clock error: kernel boot time unavailable")
-
-        let now = currentTime()
-        let uptime = Double(bootTime.tv_sec) + Double(bootTime.tv_usec) / 1_000_000
-        assert(now >= uptime, "inconsistent clock state: system time precedes boot time")
-
-        return now - uptime
+        
+        return Double(bootTime.tv_sec) + Double(bootTime.tv_usec) / 1_000_000
     }
 }
