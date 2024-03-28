@@ -27,7 +27,7 @@ struct TimeFreeze {
 
     init(offset: TimeInterval) {
         self.offset = offset
-        self.timestamp = currentTime()
+        self.timestamp = Date().timeIntervalSince1970
         self.uptime = TimeFreeze.systemUptime()
     }
 
@@ -39,7 +39,7 @@ struct TimeFreeze {
         }
 
         let currentUptime = TimeFreeze.systemUptime()
-        let currentTimestamp = currentTime()
+        let currentTimestamp = Date().timeIntervalSince1970
         let currentBoot = currentUptime - currentTimestamp
         let previousBoot = uptime - timestamp
         if rint(currentBoot) - rint(previousBoot) != 0 {
@@ -78,7 +78,7 @@ struct TimeFreeze {
         let bootTimeError = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0) != 0
         assert(!bootTimeError, "system clock error: kernel boot time unavailable")
 
-        let now = currentTime()
+        let now = Date().timeIntervalSince1970
         let uptime = Double(bootTime.tv_sec) + Double(bootTime.tv_usec) / 1_000_000
         assert(now >= uptime, "inconsistent clock state: system time precedes boot time")
 
