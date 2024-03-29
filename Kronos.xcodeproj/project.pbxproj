@@ -37,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		128A4E662BB6BFC600EEDBD7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		26447D731D6E54D400159BEE /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		26447D741D6E54D400159BEE /* DNSResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DNSResolver.swift; sourceTree = "<group>"; };
 		26447D751D6E54D400159BEE /* InternetAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InternetAddress.swift; sourceTree = "<group>"; };
@@ -123,6 +124,7 @@
 				26447D781D6E54D400159BEE /* NTPClient.swift */,
 				26447D791D6E54D400159BEE /* NTPPacket.swift */,
 				26447D7A1D6E54D400159BEE /* NTPProtocol.swift */,
+				128A4E662BB6BFC600EEDBD7 /* PrivacyInfo.xcprivacy */,
 				26447D7B1D6E54D400159BEE /* TimeFreeze.swift */,
 				930B39DC2051E6D300360BA2 /* TimeStorage.swift */,
 			);
