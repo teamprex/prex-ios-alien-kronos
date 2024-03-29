@@ -11,7 +11,9 @@ let package = Package(
     targets: [
         .target(
             name: "Kronos",
-            path: "Sources"),
+            path: "Sources",
+            resources: [.process("PrivacyInfo.xcprivacy")]
+        ),
         .testTarget(
             name: "KronosTests",
             dependencies: ["Kronos"],
