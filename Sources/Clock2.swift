@@ -55,15 +55,6 @@ public enum Clock2 {
         latestOffset = nil
         protection.unlock()
     }
-    
-    /// The most recent stored ntp date. Getting retrieves from the UserDefaults defined by the storage policy.
-    public static var storedNow: Date? {
-        if let timestamp = storage.stableTime?.adjustedTimestamp {
-            Date(timeIntervalSince1970: timestamp)
-        } else {
-            nil
-        }
-    }
 
     /// Offset between local clock and real-world NTP clock.
     /// - Note: 
@@ -94,6 +85,14 @@ public enum Clock2 {
         return Date(timeIntervalSince1970: TimeFreeze(offset: latestOffset).adjustedTimestamp)
     }
     
+    /// The most recent stored ntp date. Getting retrieves from the UserDefaults defined by the storage policy.
+    public static var storedNow: Date? {
+        if let timestamp = storage.stableTime?.adjustedTimestamp {
+            Date(timeIntervalSince1970: timestamp)
+        } else {
+            nil
+        }
+    }
     
     /// Determines where the most current stable time is stored. Use TimeStoragePolicy.appGroup to share
     /// between your app and an extension.
