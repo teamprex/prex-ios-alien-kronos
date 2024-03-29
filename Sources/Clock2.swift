@@ -85,11 +85,23 @@ public enum Clock2 {
         return Date(timeIntervalSince1970: TimeFreeze(offset: latestOffset).adjustedTimestamp)
     }
     
+    /// The most recent stored ntp date. Getting retrieves from the UserDefaults defined by the storage policy.
+    public static var storedNow: Date? {
+        if let timestamp = storage.stableTime?.adjustedTimestamp {
+            Date(timeIntervalSince1970: timestamp)
+        } else {
+            nil
+        }
+    }
     
     /// Determines where the most current stable time is stored. Use TimeStoragePolicy.appGroup to share
     /// between your app and an extension.
     private static var latestOffset: TimeInterval?
     private static let protection = NSLock()
+    
+    /// Determines where the most current stable time is stored. Use TimeStoragePolicy.appGroup to share
+    /// between your app and an extension.
+    private static var storage = TimeStorage(storagePolicy: .standard)
 
     /// Syncs the clock using NTP. Note that the full synchronization could take a few seconds. The given
     /// closure will be called with the first valid NTP response which accuracy should be good enough for the
@@ -110,6 +122,7 @@ public enum Clock2 {
         NTPClient().query(pool: pool, numberOfSamples: samples) { offset, done, total in
             assert(Thread.isMainThread)
             if let offset = offset {
+                storage.stableTime = TimeFreeze(offset: offset)
                 protection.lock()
                 latestOffset = offset
                 protection.unlock()
