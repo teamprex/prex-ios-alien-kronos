@@ -13,9 +13,10 @@ private let kMaximumDispersion = 100.0
 /// - returns: The current time in EPOCH timestamp format.
 func currentTime() -> TimeInterval {
     var current = timeval()
+    /// Thread-safe reference (section 2.9.1): https://pubs.opengroup.org/onlinepubs/9699919799/functions/V2_chap02.html
+    /// Apple Engineer's explanation: https://forums.developer.apple.com/forums/thread/749390?answerId=784240022#784240022
     let systemTimeError = gettimeofday(&current, nil) != 0
     assert(!systemTimeError, "system clock error: system time unavailable")
-
     return Double(current.tv_sec) + Double(current.tv_usec) / 1_000_000
 }
 

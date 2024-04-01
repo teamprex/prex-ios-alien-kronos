@@ -27,7 +27,7 @@ struct TimeFreeze {
 
     init(offset: TimeInterval) {
         self.offset = offset
-        self.timestamp = Date().timeIntervalSince1970
+        self.timestamp = currentTime()
         self.uptime = TimeFreeze.systemUptime()
     }
 
@@ -39,7 +39,7 @@ struct TimeFreeze {
         }
 
         let currentUptime = TimeFreeze.systemUptime()
-        let currentTimestamp = Date().timeIntervalSince1970
+        let currentTimestamp = currentTime()
         let currentBoot = currentUptime - currentTimestamp
         let previousBoot = uptime - timestamp
         if rint(currentBoot) - rint(previousBoot) != 0 {
@@ -58,7 +58,7 @@ struct TimeFreeze {
         return [
             kUptimeKey: self.uptime,
             kTimestampKey: self.timestamp,
-            kOffsetKey: self.offset,
+            kOffsetKey: self.offset
         ]
     }
 
@@ -71,17 +71,33 @@ struct TimeFreeze {
     ///
     /// - returns: An Int measurement of system uptime in microseconds.
     static func systemUptime() -> TimeInterval {
+        var now: TimeInterval
+        var beforeNow: Double
+        var afterNow = bootTime()
+        var i = 0
+        /// Original source: https://stackoverflow.com/a/40497811
+        /// Race condition prevention confirmed by Apple engineer: https://forums.developer.apple.com/forums/thread/749390?answerId=785468022#785468022
+        repeat {
+            assert(i < 10, "systemUpTime loop repeats more than 10 times")
+            beforeNow = afterNow
+            now = currentTime()
+            afterNow = bootTime()
+            i += 1
+        } while (afterNow != beforeNow)
+
+        assert(now >= beforeNow, "inconsistent clock state: system time precedes boot time")
+
+        return now - beforeNow
+    }
+
+    private static func bootTime() -> Double {
         var mib = [CTL_KERN, KERN_BOOTTIME]
         var size = MemoryLayout<timeval>.stride
         var bootTime = timeval()
-
+        /// Thread-safety explanation by Apple engineer: https://forums.developer.apple.com/forums/thread/749390?answerId=784240022#784240022
         let bootTimeError = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0) != 0
         assert(!bootTimeError, "system clock error: kernel boot time unavailable")
 
-        let now = Date().timeIntervalSince1970
-        let uptime = Double(bootTime.tv_sec) + Double(bootTime.tv_usec) / 1_000_000
-        assert(now >= uptime, "inconsistent clock state: system time precedes boot time")
-
-        return now - uptime
+        return Double(bootTime.tv_sec) + Double(bootTime.tv_usec) / 1_000_000
     }
 }

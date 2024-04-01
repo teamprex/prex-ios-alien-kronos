@@ -23,7 +23,7 @@ public enum TimeStoragePolicy {
 /// Handles saving and retrieving instances of `TimeFreeze` for quick retrieval
 public struct TimeStorage {
     private var userDefaults: UserDefaults
-    private let kDefaultsKey = "KronosStableTime"
+    private let kDefaultsKey = "PrexKronosStableTimeStorageKey"
 
     /// The most recent stored `TimeFreeze`. Getting retrieves from the UserDefaults defined by the storage
     /// policy. Setting sets the value in UserDefaults
