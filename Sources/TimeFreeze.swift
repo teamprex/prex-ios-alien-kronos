@@ -27,7 +27,7 @@ struct TimeFreeze {
 
     init(offset: TimeInterval) {
         self.offset = offset
-        self.timestamp = Date().timeIntervalSince1970
+        self.timestamp = currentTime()
         self.uptime = TimeFreeze.systemUptime()
     }
 
@@ -39,7 +39,7 @@ struct TimeFreeze {
         }
 
         let currentUptime = TimeFreeze.systemUptime()
-        let currentTimestamp = Date().timeIntervalSince1970
+        let currentTimestamp = currentTime()
         let currentBoot = currentUptime - currentTimestamp
         let previousBoot = uptime - timestamp
         if rint(currentBoot) - rint(previousBoot) != 0 {
@@ -58,7 +58,7 @@ struct TimeFreeze {
         return [
             kUptimeKey: self.uptime,
             kTimestampKey: self.timestamp,
-            kOffsetKey: self.offset,
+            kOffsetKey: self.offset
         ]
     }
 
@@ -78,10 +78,79 @@ struct TimeFreeze {
         let bootTimeError = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0) != 0
         assert(!bootTimeError, "system clock error: kernel boot time unavailable")
 
-        let now = Date().timeIntervalSince1970
-        let uptime = Double(bootTime.tv_sec) + Double(bootTime.tv_usec) / 1_000_000
+        let now = currentTime()
+        let uptime: TimeInterval = Double(bootTime.tv_sec) + Double(bootTime.tv_usec) / 1_000_000
         assert(now >= uptime, "inconsistent clock state: system time precedes boot time")
+        print("yktest systemUptime1: \(now - uptime)")
+
+        _ = systemUptime2()
+        _ = systemUptime3()
 
         return now - uptime
+    }
+    
+    /// Returns a high-resolution measurement of system uptime, that continues ticking through device sleep
+    /// *and* user- or system-generated clock adjustments. This allows for stable differences to be calculated
+    /// between timestamps.
+    ///
+    /// - returns: An Int measurement of system uptime in nanoseconds.
+    /// - reference: https://stackoverflow.com/a/45068046/23930754
+    /// - Note: This function is thread-safe. Can be called from any thread concurrently.
+//    static func systemUptime() -> TimeInterval {
+//        var uptime = timespec()
+//        /// Thread-safe reference: https://man7.org/linux/man-pages/man3/clock_gettime.3.html#ATTRIBUTES
+//        if 0 != clock_gettime(CLOCK_MONOTONIC_RAW, &uptime) {
+//            fatalError("Could not execute clock_gettime, errno: \(errno)")
+//        }
+//        let uptimeInNanoSeconds = UInt64(uptime.tv_sec * 1_000_000_000) + UInt64(uptime.tv_nsec)
+//        let uptimeInSeconds = TimeInterval(uptimeInNanoSeconds) / TimeInterval(NSEC_PER_SEC)
+//
+//        return uptimeInSeconds
+//    }
+
+    static func systemUptime2() -> TimeInterval {
+        var now: TimeInterval
+        var beforeNow: Double
+        var afterNow = bootTime()
+        var i = 0
+        repeat {
+            beforeNow = afterNow
+            now = currentTime()
+            afterNow = bootTime()
+            if i > 1 {
+                print("yktest systemUptime2: loop \(i)")
+            }
+            i += 1
+        } while (afterNow != beforeNow)
+
+        print("yktest systemUptime2 beforeNow: \(beforeNow)")
+        print("yktest systemUptime2 afterNow: \(afterNow)")
+        print("yktest systemUptime2: \(now - beforeNow)")
+
+        assert(now >= beforeNow, "inconsistent clock state: system time precedes boot time")
+
+        return now - beforeNow
+    }
+
+    private static func bootTime() -> Double {
+        var mib = [CTL_KERN, KERN_BOOTTIME]
+        var size = MemoryLayout<timeval>.stride
+        var bootTime = timeval()
+
+        let bootTimeError = sysctl(&mib, u_int(mib.count), &bootTime, &size, nil, 0) != 0
+        assert(!bootTimeError, "system clock error: kernel boot time unavailable")
+
+        return Double(bootTime.tv_sec) + Double(bootTime.tv_usec) / 1_000_000
+    }
+
+    static func systemUptime3() -> TimeInterval {
+        var uptime = timespec()
+        if 0 != clock_gettime(CLOCK_MONOTONIC_RAW, &uptime) {
+            fatalError("Could not execute clock_gettime, errno: \(errno)")
+        }
+        let uptimeInNanoSeconds = UInt64(uptime.tv_sec * 1_000_000_000) + UInt64(uptime.tv_nsec)
+        let uptimeInSeconds = TimeInterval(uptimeInNanoSeconds) / TimeInterval(NSEC_PER_SEC)
+        print("yktest systemUptime3: \(uptimeInSeconds)")
+        return uptimeInSeconds
     }
 }
