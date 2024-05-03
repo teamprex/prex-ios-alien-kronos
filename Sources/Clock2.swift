@@ -87,10 +87,13 @@ public enum Clock2 {
     
     /// The most recent stored ntp date. Getting retrieves from the UserDefaults defined by the storage policy.
     public static var storedNow: Date? {
-        if let timestamp = storage.stableTime?.adjustedTimestamp {
-            Date(timeIntervalSince1970: timestamp)
+        protection.lock()
+        let localTimestamp = storage.stableTime?.adjustedTimestamp
+        protection.unlock()
+        if let timestamp = localTimestamp {
+            return Date(timeIntervalSince1970: timestamp)
         } else {
-            nil
+            return nil
         }
     }
     
@@ -122,8 +125,9 @@ public enum Clock2 {
         NTPClient().query(pool: pool, numberOfSamples: samples) { offset, done, total in
             assert(Thread.isMainThread)
             if let offset = offset {
-                storage.stableTime = TimeFreeze(offset: offset)
+                let newFreeze = TimeFreeze(offset: offset)
                 protection.lock()
+                storage.stableTime = newFreeze
                 latestOffset = offset
                 protection.unlock()
             }
