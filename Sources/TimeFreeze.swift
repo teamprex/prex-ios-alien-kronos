@@ -31,10 +31,11 @@ struct TimeFreeze {
         self.uptime = TimeFreeze.systemUptime()
     }
 
-    init?(from dictionary: [String: TimeInterval]) {
+    init?(from dictionary: [String: TimeInterval], log: ((Log) -> Void)?) {
         guard let uptime = dictionary[kUptimeKey], let timestamp = dictionary[kTimestampKey],
             let offset = dictionary[kOffsetKey] else
         {
+            log?(.dictionaryValueNotFound(dictionary: dictionary))
             return nil
         }
 
@@ -43,6 +44,7 @@ struct TimeFreeze {
         let currentBoot = currentUptime - currentTimestamp
         let previousBoot = uptime - timestamp
         if rint(currentBoot) - rint(previousBoot) != 0 {
+            log?(.invalidBootTime(currentUptime: currentUptime, currentTimestamp: currentTimestamp, currentBoot: currentBoot, previousBoot: previousBoot, dictionary: dictionary))
             return nil
         }
 

@@ -24,14 +24,19 @@ public enum TimeStoragePolicy {
 public struct TimeStorage {
     private var userDefaults: UserDefaults
     private let kDefaultsKey = "PrexKronosStableTimeStorageKey"
+    var log: ((Log) -> Void)?
 
     /// The most recent stored `TimeFreeze`. Getting retrieves from the UserDefaults defined by the storage
     /// policy. Setting sets the value in UserDefaults
     var stableTime: TimeFreeze? {
         get {
-            guard let stored = self.userDefaults.value(forKey: kDefaultsKey) as? [String: TimeInterval],
-                let previousStableTime = TimeFreeze(from: stored) else
-            {
+            guard let stored = self.userDefaults.value(forKey: kDefaultsKey) as? [String: TimeInterval] else {
+                if userDefaults.value(forKey: kDefaultsKey) != nil {
+                    log?(.unmatchedUserDefaultsValue(value: userDefaults.value(forKey: kDefaultsKey).debugDescription))
+                }
+                return nil
+            }
+            guard let previousStableTime = TimeFreeze(from: stored, log: log) else {
                 return nil
             }
 

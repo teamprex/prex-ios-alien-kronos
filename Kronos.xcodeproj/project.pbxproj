@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12FE5FFE2C2E7C7900FFB543 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FE5FFD2C2E7C7900FFB543 /* Log.swift */; };
 		26447D7C1D6E54D400159BEE /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26447D731D6E54D400159BEE /* Clock.swift */; };
 		26447D7D1D6E54D400159BEE /* DNSResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26447D741D6E54D400159BEE /* DNSResolver.swift */; };
 		26447D7E1D6E54D400159BEE /* InternetAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26447D751D6E54D400159BEE /* InternetAddress.swift */; };
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		128A4E662BB6BFC600EEDBD7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		12FE5FFD2C2E7C7900FFB543 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		26447D731D6E54D400159BEE /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		26447D741D6E54D400159BEE /* DNSResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DNSResolver.swift; sourceTree = "<group>"; };
 		26447D751D6E54D400159BEE /* InternetAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InternetAddress.swift; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				128A4E662BB6BFC600EEDBD7 /* PrivacyInfo.xcprivacy */,
 				26447D7B1D6E54D400159BEE /* TimeFreeze.swift */,
 				930B39DC2051E6D300360BA2 /* TimeStorage.swift */,
+				12FE5FFD2C2E7C7900FFB543 /* Log.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -232,6 +235,7 @@
 			files = (
 				26447D831D6E54D400159BEE /* NTPProtocol.swift in Sources */,
 				930B39DD2051E6D300360BA2 /* TimeStorage.swift in Sources */,
+				12FE5FFE2C2E7C7900FFB543 /* Log.swift in Sources */,
 				26447D7C1D6E54D400159BEE /* Clock.swift in Sources */,
 				26447D7D1D6E54D400159BEE /* DNSResolver.swift in Sources */,
 				26447D7E1D6E54D400159BEE /* InternetAddress.swift in Sources */,

@@ -20,6 +20,14 @@ import Foundation
 /// print(Clock.now)
 /// ```
 public enum Clock2 {
+    public static var log: ((Log) -> Void)? {
+        didSet {
+            protection.lock()
+            storage.log = log
+            protection.unlock()
+        }
+    }
+
     /// Syncs the clock using NTP. Note that the full synchronization could take a few seconds. The given
     /// closure will be called with the first valid NTP response which accuracy should be good enough for the
     /// initial clock adjustment but it might not be the most accurate representation. After calling the
