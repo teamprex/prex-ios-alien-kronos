@@ -43,6 +43,12 @@ struct TimeFreeze {
         let currentTimestamp = currentTime()
         let currentBoot = currentUptime - currentTimestamp
         let previousBoot = uptime - timestamp
+        print("yktest uptime \(uptime)")
+        print("yktest timestamp \(timestamp)")
+        print("yktest currentUptime \(currentUptime)")
+        print("yktest currentTimestamp \(currentTimestamp)")
+        print("yktest previousBoot \(previousBoot)")
+        print("yktest currentBoot \(currentBoot)")
         if rint(currentBoot) - rint(previousBoot) != 0 {
             log?(.invalidBootTime(currentUptime: currentUptime, currentTimestamp: currentTimestamp, currentBoot: currentBoot, previousBoot: previousBoot, dictionary: dictionary))
             return nil
