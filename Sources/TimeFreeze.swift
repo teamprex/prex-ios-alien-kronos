@@ -44,7 +44,6 @@ struct TimeFreeze {
         let currentBoot = currentUptime - currentTimestamp
         let previousBoot = uptime - timestamp
         if rint(currentBoot) - rint(previousBoot) != 0 {
-            log?(.invalidBootTime(currentUptime: currentUptime, currentTimestamp: currentTimestamp, currentBoot: currentBoot, previousBoot: previousBoot, dictionary: dictionary))
             return nil
         }
 
