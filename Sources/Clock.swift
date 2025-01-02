@@ -25,7 +25,7 @@ public typealias AnnotatedTime = (
 /// print(Clock.now)
 /// ```
 public struct Clock {
-    private static var stableTime: TimeFreeze? {
+    nonisolated(unsafe) private static var stableTime: TimeFreeze? {
         didSet {
             self.storage.stableTime = self.stableTime
         }
@@ -33,7 +33,7 @@ public struct Clock {
 
     /// Determines where the most current stable time is stored. Use TimeStoragePolicy.appGroup to share
     /// between your app and an extension.
-    public static var storage = TimeStorage(storagePolicy: .standard)
+    nonisolated(unsafe) public static var storage = TimeStorage(storagePolicy: .standard)
 
     /// The most accurate timestamp that we have so far (nil if no synchronization was done yet)
     public static var timestamp: TimeInterval? {

@@ -20,7 +20,7 @@ import Foundation
 /// print(Clock.now)
 /// ```
 public enum Clock2 {
-    public static var log: ((Log) -> Void)? {
+    nonisolated(unsafe) public static var log: ((Log) -> Void)? {
         didSet {
             protection.lock()
             storage.log = log
@@ -107,12 +107,12 @@ public enum Clock2 {
     
     /// Determines where the most current stable time is stored. Use TimeStoragePolicy.appGroup to share
     /// between your app and an extension.
-    private static var latestOffset: TimeInterval?
+    nonisolated(unsafe) private static var latestOffset: TimeInterval?
     private static let protection = NSLock()
     
     /// Determines where the most current stable time is stored. Use TimeStoragePolicy.appGroup to share
     /// between your app and an extension.
-    private static var storage = TimeStorage(storagePolicy: .standard)
+    nonisolated(unsafe) private static var storage = TimeStorage(storagePolicy: .standard)
 
     /// Syncs the clock using NTP. Note that the full synchronization could take a few seconds. The given
     /// closure will be called with the first valid NTP response which accuracy should be good enough for the
