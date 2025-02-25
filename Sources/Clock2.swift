@@ -20,11 +20,21 @@ import Foundation
 /// print(Clock.now)
 /// ```
 public enum Clock2 {
+    /// The original code is already protected using NSLock and is designed to be used synchronously
+    /// throughout the app. Given this, using `nonisolated(unsafe)` is preferred over converting it to an actor.
+    nonisolated(unsafe) private static var _log: ((Log) -> Void)?
     public static var log: ((Log) -> Void)? {
-        didSet {
+        get {
             protection.lock()
-            storage.log = log
+            let localLog = _log
             protection.unlock()
+            return localLog
+        }
+        set {
+            protection.lock()
+            _log = newValue
+            protection.unlock()
+            storage.log = newValue
         }
     }
 
@@ -107,12 +117,16 @@ public enum Clock2 {
     
     /// Determines where the most current stable time is stored. Use TimeStoragePolicy.appGroup to share
     /// between your app and an extension.
-    private static var latestOffset: TimeInterval?
+    /// The original code is already protected using NSLock and is designed to be used synchronously
+    /// throughout the app. Given this, using `nonisolated(unsafe)` is preferred over converting it to an actor.
+    nonisolated(unsafe) private static var latestOffset: TimeInterval?
     private static let protection = NSLock()
     
     /// Determines where the most current stable time is stored. Use TimeStoragePolicy.appGroup to share
     /// between your app and an extension.
-    private static var storage = TimeStorage(storagePolicy: .standard)
+    /// The original code is already protected using NSLock and is designed to be used synchronously
+    /// throughout the app. Given this, using `nonisolated(unsafe)` is preferred over converting it to an actor.
+    nonisolated(unsafe) private static var storage = TimeStorage(storagePolicy: .standard)
 
     /// Syncs the clock using NTP. Note that the full synchronization could take a few seconds. The given
     /// closure will be called with the first valid NTP response which accuracy should be good enough for the
