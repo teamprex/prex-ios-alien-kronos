@@ -24,7 +24,23 @@ public enum TimeStoragePolicy {
 public struct TimeStorage {
     private var userDefaults: UserDefaults
     private let kDefaultsKey = "PrexKronosStableTimeStorageKey"
-    var log: ((Log) -> Void)?
+
+    private let lock = NSLock()
+
+    /// Thread-safe logging function
+    var log: ((Log) -> Void)? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _log
+        }
+        set {
+            lock.lock()
+            _log = newValue
+            lock.unlock()
+        }
+    }
+    private var _log: ((Log) -> Void)?
 
     /// The most recent stored `TimeFreeze`. Getting retrieves from the UserDefaults defined by the storage
     /// policy. Setting sets the value in UserDefaults
