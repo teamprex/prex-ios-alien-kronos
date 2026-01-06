@@ -19,7 +19,7 @@ import Foundation
 /// // (... later on ...)
 /// print(Clock.now)
 /// ```
-public enum Clock2 {
+public enum Clock2: Sendable {
     /// The original code is already protected using NSLock and is designed to be used synchronously
     /// throughout the app. Given this, using `nonisolated(unsafe)` is preferred over converting it to an actor.
     nonisolated(unsafe) private static var _log: ((Log) -> Void)?
