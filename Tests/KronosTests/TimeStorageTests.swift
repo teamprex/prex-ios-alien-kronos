@@ -37,8 +37,8 @@ class TimeStorageTests: XCTestCase {
         var storedData = sampleFreeze.toDictionary()
         storedData["Uptime"] = storedData["Uptime"]! + 10
 
-        let beforeRebootFreeze = TimeFreeze(from: sampleFreeze.toDictionary())
-        let afterRebootFreeze = TimeFreeze(from: storedData)
+        let beforeRebootFreeze = TimeFreeze(from: sampleFreeze.toDictionary(), log: nil)
+        let afterRebootFreeze = TimeFreeze(from: storedData, log: nil)
         XCTAssertNil(afterRebootFreeze)
         XCTAssertNotNil(beforeRebootFreeze)
     }

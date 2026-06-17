@@ -1,6 +1,8 @@
 import XCTest
 @testable import Kronos
 
+@MainActor
+@available(*, deprecated, message: "Exercises the deprecated Clock; kept for reference alongside Clock2.")
 final class ClockTests: XCTestCase {
 
     override func setUp() {
