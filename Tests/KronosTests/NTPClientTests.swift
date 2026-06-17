@@ -1,6 +1,7 @@
 import XCTest
 @testable import Kronos
 
+@MainActor
 final class NTPClientTests: XCTestCase {
 
     func testQueryIP() {

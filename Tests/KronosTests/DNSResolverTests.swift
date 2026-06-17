@@ -1,6 +1,7 @@
 import XCTest
 @testable import Kronos
 
+@MainActor
 final class DNSResolverTests: XCTestCase {
 
     func testResolveOneIP() {
