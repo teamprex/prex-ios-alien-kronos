@@ -16,9 +16,6 @@ let package = Package(
         ),
         .testTarget(
             name: "KronosTests",
-            dependencies: ["Kronos"],
-            swiftSettings: [
-                .enableUpcomingFeature("StrictConcurrency"),
-            ]),
+            dependencies: ["Kronos"]),
     ]
 )
