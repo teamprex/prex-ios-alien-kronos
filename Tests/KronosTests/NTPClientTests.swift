@@ -30,8 +30,12 @@ final class NTPClientTests: XCTestCase {
 
             NTPClient().query(pool: "0.pool.ntp.org", numberOfSamples: 1, maximumServers: 1)
             { offset2, _, _ in
-                XCTAssertNotNil(offset2)
-                XCTAssertLessThan(abs(offset! - offset2!), 0.10)
+                guard let offset, let offset2 else {
+                    XCTFail("NTP query returned no offset (network/UDP 123 blocked?)")
+                    expectation.fulfill()
+                    return
+                }
+                XCTAssertLessThan(abs(offset - offset2), 0.10)
                 expectation.fulfill()
             }
         }
