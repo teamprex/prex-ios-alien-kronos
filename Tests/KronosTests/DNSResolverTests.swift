@@ -4,10 +4,12 @@ import XCTest
 @MainActor
 final class DNSResolverTests: XCTestCase {
 
+    // Uses the IANA-reserved example.com and asserts > 0: an exact count tied to a third-party
+    // domain's DNS broke twice before (lyft.com grew extra A records, then test.com lost its A record).
     func testResolveOneIP() {
         let expectation = self.expectation(description: "Query host's DNS for a single IP")
-        DNSResolver.resolve(host: "test.com") { addresses in
-            XCTAssertEqual(addresses.count, 1)
+        DNSResolver.resolve(host: "example.com") { addresses in
+            XCTAssertGreaterThan(addresses.count, 0)
             expectation.fulfill()
         }
 
