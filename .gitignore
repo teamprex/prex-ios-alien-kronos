@@ -14,7 +14,6 @@
 ._*
 .AppleDouble
 .build/
-.swiftpm/
 .DS_Store
 .LSOverride
 build/
