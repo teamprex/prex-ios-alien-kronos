@@ -14,13 +14,15 @@ enum InternetAddress: Hashable {
         case .ipv6(var address):
             var buffer = [CChar](repeating: 0, count: Int(INET6_ADDRSTRLEN))
             return buffer.withUnsafeMutableBufferPointer {
-                String(cString: inet_ntop(AF_INET6, &address.sin6_addr, $0.baseAddress, socklen_t($0.count))!)
+                inet_ntop(AF_INET6, &address.sin6_addr, $0.baseAddress, socklen_t($0.count))
+                    .map { String(cString: $0) }
             }
 
         case .ipv4(var address):
             var buffer = [CChar](repeating: 0, count: Int(INET_ADDRSTRLEN))
             return buffer.withUnsafeMutableBufferPointer {
-                String(cString: inet_ntop(AF_INET, &address.sin_addr, $0.baseAddress, socklen_t($0.count))!)
+                inet_ntop(AF_INET, &address.sin_addr, $0.baseAddress, socklen_t($0.count))
+                    .map { String(cString: $0) }
             }
         }
     }
